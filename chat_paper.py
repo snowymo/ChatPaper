@@ -15,6 +15,7 @@ import tenacity
 import tiktoken
 
 import fitz, io, os
+import zhon
 from PIL import Image
 
 
@@ -30,6 +31,7 @@ class Paper:
         if title == '':
             self.pdf = fitz.open(self.path) # pdf文档
             self.title = self.get_title()
+            print("L30 TITLE:",self.title)
             self.parse_pdf()            
         else:
             self.title = title
@@ -46,6 +48,7 @@ class Paper:
         print("section_page_dict", self.section_page_dict)
         self.section_text_dict = self._get_all_page() # 段落与内容的对应字典
         self.section_text_dict.update({"title": self.title})
+        print("L50 TITLE:", self.title)
         self.section_text_dict.update({"paper_info": self.get_paper_info()})
         self.pdf.close()         
         
@@ -450,6 +453,8 @@ class Reader:
 
     def summary_with_chat(self, paper_list):
         htmls = []
+        return_htmls = []
+        title = []
         for paper_index, paper in enumerate(paper_list):
             # 第一步先用title，abs，和introduction进行总结。
             text = ''
@@ -478,6 +483,11 @@ class Reader:
             htmls.append('## Paper:' + str(paper_index + 1))
             htmls.append('\n\n\n')
             htmls.append(chat_summary_text)
+            sum_title = re.search(r"[标题|Title]:\s*(.*)", chat_summary_text).group(1).strip()
+            print("L487 Title:", sum_title)
+            paper.title = re.sub('[{}]'.format(zhon.hanzi.punctuation), "_", self.validateTitle(sum_title))
+            print("L489 Title:", paper.title)
+            title.append(paper.title)
 
             # 第二步总结方法：
             # TODO，由于有些文章的方法章节名是算法名，所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
@@ -563,7 +573,9 @@ class Reader:
 
             # file_name = os.path.join(export_path, date_str+'-'+self.validateTitle(paper.title)+".md")
             # self.export_to_markdown("\n".join(htmls), file_name=file_name, mode=mode)
+            return_htmls.append(htmls)
             htmls = []
+        return return_htmls, title
 
     @tenacity.retry(wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
                     stop=tenacity.stop_after_attempt(5),
