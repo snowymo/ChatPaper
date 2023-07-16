@@ -1,0 +1,6 @@
+0. 根据词云，判断趋势，从高到低list paper，把大的kw去掉再列
+1. 开始写每一页-分详略，详的把一页做完，gg sheet里把可能的分类都标上，一般得有技术、应用、可能还有远离；略的就记一下干什么的和益处
+2. 根据gg sheet做section name
+3. 再用chatpaper根据chi 2023和section name做一次gg scholar复查搜索，简单地查漏补缺
+4。 几个关键公司的页面ms, adobe, msr? etc
+4. 应用在我司

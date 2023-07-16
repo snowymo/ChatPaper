@@ -368,7 +368,7 @@ class Reader:
 
     def validateTitle(self, title):
         # 将论文的乱七八糟的路径格式修正
-        rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
+        rstr = r"[\/\\\:\*\?\"\<\>\|\,]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
 
@@ -485,11 +485,11 @@ class Reader:
             htmls.append(chat_summary_text)
             sum_title = re.search(r"[标题|Title]:\s*(.*)", chat_summary_text)
             if sum_title is None:
-                sum_title = paper.title + "_" + paper.path
+                sum_title = paper.title + "_" + paper.path[paper.path.rindex(".",0,-4)+1:paper.path.rindex(".")]
             else:
                 sum_title = sum_title.group(1).strip()
             print("L487 Title:", sum_title)
-            paper.title = re.sub('[{}]'.format(zhon.hanzi.punctuation), "_", self.validateTitle(sum_title[:80]))
+            paper.title = re.sub('[{}]'.format(zhon.hanzi.punctuation), "_", self.validateTitle(sum_title[:80]).rstrip())
             print("L489 Title:", paper.title)
             title.append(paper.title)
 
