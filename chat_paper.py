@@ -472,7 +472,7 @@ class Reader:
                 import sys
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print("L475",exc_type, fname, exc_tb.tb_lineno)
                 if "maximum context" in str(e):
                     current_tokens_index = str(e).find("your messages resulted in") + len(
                         "your messages resulted in") + 1
@@ -483,9 +483,13 @@ class Reader:
             htmls.append('## Paper:' + str(paper_index + 1))
             htmls.append('\n\n\n')
             htmls.append(chat_summary_text)
-            sum_title = re.search(r"[标题|Title]:\s*(.*)", chat_summary_text).group(1).strip()
+            sum_title = re.search(r"[标题|Title]:\s*(.*)", chat_summary_text)
+            if sum_title is None:
+                sum_title = paper.title + "_" + paper.path
+            else:
+                sum_title = sum_title.group(1).strip()
             print("L487 Title:", sum_title)
-            paper.title = re.sub('[{}]'.format(zhon.hanzi.punctuation), "_", self.validateTitle(sum_title))
+            paper.title = re.sub('[{}]'.format(zhon.hanzi.punctuation), "_", self.validateTitle(sum_title[:80]))
             print("L489 Title:", paper.title)
             title.append(paper.title)
 
